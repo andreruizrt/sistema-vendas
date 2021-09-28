@@ -1,10 +1,14 @@
 package main.service;
 
+import main.domain.Pessoa;
 import main.domain.Produto;
+import main.repository.ProdutoRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class ProdutoService {
@@ -12,6 +16,10 @@ public class ProdutoService {
     Scanner sc = new Scanner(System.in);
 
     ProdutoRepository produtoRepository = new ProdutoRepository();
+
+    public List<Produto> carregaProdutos() throws SQLException {
+        return produtoRepository.carregaProdutos();
+    }
 
     public void cadastraProduto() throws IOException {
         Produto produto = new Produto();
@@ -32,5 +40,11 @@ public class ProdutoService {
         produto.setPreco(sc.nextDouble());
 
         produtoRepository.cadatraProduto(produto);
+    }
+
+    public void printIdEDescricao(List<Produto> produtos) {
+        for (Produto produto : produtos) {
+            System.out.println(produto.getId() + ") " + produto.getDescricao());
+        }
     }
 }

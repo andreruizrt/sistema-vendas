@@ -10,7 +10,7 @@ public class DatabaseRepository {
     Connection conn = null;
 
     try {
-      String url = "jdbc:sqlite:/home/andreruxx/Desktop/ES/sistema-vendas/src/database/bancoTeste";
+      String url = "jdbc:sqlite:/home/andreruxx/Desktop/sistema-vendas/src/database/database.db";
 
       conn = DriverManager.getConnection(url);
 

@@ -1,24 +1,24 @@
 package main.domain;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Compra extends Controle {
-    private int idVendedor;
-    private Date dtCompra;
+    private int idFornecedor;
+    private Timestamp dtCompra;
 
-    public int getIdVendedor() {
-        return idVendedor;
+    public int getIdFornecedor() {
+        return idFornecedor;
     }
 
-    public void setIdVendedor(int idVendedor) {
-        this.idVendedor = idVendedor;
+    public void setIdFornecedor(int idFornecedor) {
+        this.idFornecedor = idFornecedor;
     }
 
-    public Date getDtCompra() {
+    public Timestamp getDtCompra() {
         return dtCompra;
     }
 
-    public void setDtCompra(Date dtCompra) {
+    public void setDtCompra(Timestamp dtCompra) {
         this.dtCompra = dtCompra;
     }
 }

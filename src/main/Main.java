@@ -3,9 +3,7 @@ package main;
 import main.domain.Pessoa;
 import main.domain.Produto;
 import main.domain.Usuario;
-import main.service.PessoaService;
-import main.service.ProdutoService;
-import main.service.UsuarioService;
+import main.service.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -110,17 +108,19 @@ public class Main {
         System.out.print("Digite a opção: ");
     }
 
-    private static void menuCadatrar() throws IOException {
+    private static void menuCadatrar() throws IOException, SQLException {
         Scanner sc = new Scanner(System.in);
+
         PessoaService pessoaService = new PessoaService();
         ProdutoService produtoService = new ProdutoService();
+        CompraService compraService = new CompraService();
+        VendaService vendaService = new VendaService();
 
         printSubmenu();
 
         int opcao = 0;
 
         while(opcao != 7) {
-            printMenu();
             opcao = sc.nextInt();
 
             switch (opcao) {
@@ -137,15 +137,12 @@ public class Main {
                     produtoService.cadastraProduto();
                     break;
                 case 5:
-                    menuRelatorios();
+                    compraService.realizarCompra();
                     break;
                 case 6:
-//
+//                  vendaService.realizarVenda();
                     break;
                 case 7:
-//
-                    break;
-                case 8:
                     System.out.println("Voltando...");
                     break;
                 case 9:
@@ -158,7 +155,8 @@ public class Main {
 
     }
 
-    private static void menuPesquisar() {
+    private static void menuPesquisar() throws SQLException, IOException {
+        Scanner sc = new Scanner(System.in);
         printSubmenu();
 
         int opcao = 0;

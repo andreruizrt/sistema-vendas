@@ -1,2 +1,5 @@
-package main.service;public class VendaService {
+package main.service;
+
+public class VendaService {
+
 }
