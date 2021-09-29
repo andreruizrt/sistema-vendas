@@ -1,11 +1,13 @@
 package main.service;
 
 import main.domain.Usuario;
+import main.repository.PessoaRepository;
 import main.repository.UsuarioRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class UsuarioService {
@@ -13,6 +15,7 @@ public class UsuarioService {
     Scanner sc = new Scanner(System.in);
 
     UsuarioRepository usuarioRepository = new UsuarioRepository();
+    PessoaRepository pessoaRepository = new PessoaRepository();
 
     public void cadastraUsuario() throws IOException {
         PessoaService pessoaService = new PessoaService();
@@ -38,7 +41,7 @@ public class UsuarioService {
         pessoaService.printIdENome(pessoaService.carregaPessoaPorTipo("V"));
         System.out.print("\nDigite o ID do vendedor: ");
         usuario.setIdVendedor(sc.nextInt());
-        if(pessoaService.findPessoaById(usuario.getIdVendedor(), "V") != null) {
+        if(pessoaRepository.findPessoaById(usuario.getIdVendedor(), "V") != null) {
             usuarioRepository.cadastraUsuario(usuario);
         } else {
             System.out.println("Vendedor não encontrado!");
@@ -72,5 +75,48 @@ public class UsuarioService {
                 if( tentativas > 2) System.exit(0);
             }
         }
+    }
+
+    public Usuario findUsuarioById() {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        return usuarioRepository.findUsuarioById(id);
+    }
+
+    public void updateUsuarioById() throws IOException, SQLException {
+        Usuario usuario = new Usuario();
+
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        if(usuarioRepository.findUsuarioById(id) != null) {
+            System.out.print("Digite o usuário: ");
+            usuario.setUsuario(in.readLine());
+
+            System.out.print("Informe uma senha: ");
+            String senha = in.readLine();
+
+            System.out.print("Confirme a senha: ");
+            String confirmeSenha = in.readLine();
+
+            if( senha.equalsIgnoreCase(confirmeSenha)) {
+                usuario.setSenha(senha);
+            } else {
+                System.out.println("As senhas não são correspondentes.");
+                return;
+            }
+
+            usuarioRepository.updateUsuarioById(usuario);
+        } else {
+            System.out.println("Usuário não cadastrado!");
+        }
+    }
+
+    public void deleteUsuarioById() {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        usuarioRepository.deleteUsuarioById(id);
     }
 }

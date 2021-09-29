@@ -1,48 +1,49 @@
 package main.repository;
 
-import main.domain.Compra;
 import main.domain.Produto;
+import main.domain.Venda;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompraRepository {
+public class VendaRepository {
     DatabaseRepository dbRepository = new DatabaseRepository();
 
-    public int registaCompra(Compra compra) {
-        String insertSql = "INSERT INTO COMPRA_TR01(IDFORNECEDOR, DTCOMPRA) " +
-                "VALUES (?, ?)";
+    public int registaVenda(Venda venda) {
+        String insertSql = "INSERT INTO VENDA_TR01(IDCLIENTE, IDVENDEDOR, DTVENDA) " +
+                "VALUES (?, ?, ?)";
 
         try (Connection conn = dbRepository.connect();
              PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-            pstmt.setInt(1, compra.getIdFornecedor());
-            pstmt.setString(2, compra.getDtCompra().toString());
+            pstmt.setInt(1, venda.getIdCliente());
+            pstmt.setInt(2, venda.getIdVendedor());
+            pstmt.setString(3, venda.getDtVenda().toString());
 
             int i = pstmt.executeUpdate();
 
-            System.out.println("Compra cadastrada!");
+            System.out.println("Venda cadastrada!");
             return i;
         } catch (SQLException ex) {
-            System.out.println("Erro inserindo compra no banco: " + ex.getMessage());
+            System.out.println("Erro inserindo venda no banco: " + ex.getMessage());
         }
         return -1;
     }
 
-    public void inserirCompraItens(int idCompra, List<Produto> produtoComprados) {
+    public void inserirVendaItens(int idVenda, List<Produto> produtoVendidos) {
         Connection conn = dbRepository.connect();
 
-        String insertSql = "INSERT INTO ITEM_COMPRA_TR01(IDCOMPRA, IDPRODUTO, QTDPRODUTO) " +
+        String insertSql = "INSERT INTO ITEM_VENDA_TR01(IDVENDA, IDPRODUTO, QTDPRODUTO) " +
                 "VALUES (?, ?, ?)";
 
-        for (Produto produto : produtoComprados) {
+        for (Produto produto : produtoVendidos) {
             try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-                pstmt.setInt(1, idCompra);
+                pstmt.setInt(1, idVenda);
                 pstmt.setInt(2, produto.getId());
                 pstmt.setInt(3, produto.getQtdEstoque());
 
                 pstmt.executeUpdate();
-                System.out.println("Lista de produtos comprados salva com sucesso!");
+//                System.out.println("Lista de produtos vendido salva com sucesso!");
 
             } catch (SQLException e) {
                 System.out.println("Erro ao inserir lista de produtos: " + e.getMessage());
@@ -51,8 +52,8 @@ public class CompraRepository {
         }
     }
 
-    public Compra findCompraById(int id) {
-        String sql = "SELECT * FROM COMPRA_TR01";
+    public Venda findVendaById(int id) {
+        String sql = "SELECT * FROM VENDA_TR01";
 
         try (Connection conn = dbRepository.connect();
              Statement stmt = conn.createStatement();
@@ -60,13 +61,13 @@ public class CompraRepository {
 
             while (pstmt.next()) {
                 if (pstmt.getInt("ID") == id) {
-                    Compra compra = new Compra();
-                    compra.setId(pstmt.getInt("ID"));
-                    compra.setIdFornecedor(pstmt.getInt("IDFORNECEDOR"));
-//                    compra.setDtCompra(pstmt.getString("DTCOMPRA"));
-                   compra.setProdutos(this.retornaProdutoCompra(compra.getId()));
+                    Venda venda = new Venda();
+                    venda.setId(pstmt.getInt("ID"));
+                    venda.setIdVendedor(pstmt.getInt("IDVENDEDOR"));
+//                    venda.setDtVenda(pstmt.getString("DTVENDA"));
+                    venda.setProdutos(this.retornaProdutoVenda(venda.getId()));
 
-                    return compra;
+                    return venda;
                 }
             }
         } catch (SQLException e) {
@@ -76,8 +77,8 @@ public class CompraRepository {
         return null;
     }
 
-    private List<Produto> retornaProdutoCompra(int id) {
-        String sql = "SELECT IDCOMPRA, IDPRODUTO FROM ITEM_COMPRA_TR01";
+    private List<Produto> retornaProdutoVenda(int id) {
+        String sql = "SELECT IDVENDA, IDPRODUTO FROM ITEM_VENDA_TR01";
         ProdutoRepository produtoService = new ProdutoRepository();
         List<Produto> produtoList = new ArrayList<>();
 
@@ -86,7 +87,7 @@ public class CompraRepository {
              ResultSet pstmt = stmt.executeQuery(sql)) {
 
             while (pstmt.next()) {
-                if (pstmt.getInt("IDCOMPRA") == id) {
+                if (pstmt.getInt("IDVENDA") == id) {
                     int idProduto = pstmt.getInt("IDPRODUTO");
                     produtoList.add(produtoService.findProdutoById(idProduto));
                 }
@@ -99,8 +100,8 @@ public class CompraRepository {
         return null;
     }
 
-    public void deleteCompraById(int id) {
-        String sql = "DELETE FROM COMPRA_TR01 WHERE ID = ?";
+    public void deleteVendaById(int id) {
+        String sql = "DELETE FROM VENDA_TR01 WHERE ID = ?";
 
         try (Connection conn = dbRepository.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -111,5 +112,4 @@ public class CompraRepository {
             System.out.println(e.getMessage());
         }
     }
-    
 }

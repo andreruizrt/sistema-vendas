@@ -12,15 +12,14 @@ public class ProdutoRepository {
     public void cadatraProduto(Produto produto) {
 
         String sql = "INSERT INTO PRODUTO_TR01(DESCRICAO, CODIGOBARRAS, FABRICANTE," +
-                " QTDESTOQUE, PRECO) VALUES (?, ?, ?, ?, ?)";
+                " QTDESTOQUE, PRECO) VALUES (?, ?, ?, 0, ?)";
 
         try (Connection conn = dbRepository.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, produto.getDescricao());
             pstmt.setString(2, produto.getCodigoBarras());
             pstmt.setString(3, produto.getFabricante());
-            pstmt.setInt(4, produto.getQtdEstoque());
-            pstmt.setDouble(5, produto.getPreco());
+            pstmt.setDouble(4, produto.getPreco());
 
             pstmt.executeUpdate();
 
@@ -52,5 +51,74 @@ public class ProdutoRepository {
             }
         }
         return (produtoList);
+    }
+
+    public Produto findProdutoById(int id) {
+        String sql = "SELECT * FROM PRODUTO_TR01";
+
+        try (Connection conn = dbRepository.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet pstmt = stmt.executeQuery(sql)) {
+
+            while (pstmt.next()) {
+                if (pstmt.getInt("ID") == id) {
+                    Produto produto = new Produto();
+                    produto.setId(pstmt.getInt("ID"));
+                    produto.setDescricao(pstmt.getString("DESCRICAO"));
+                    produto.setCodigoBarras(pstmt.getString("CODIGOBARRAS"));
+                    produto.setFabricante(pstmt.getString("FABRICANTE"));
+                    produto.setQtdEstoque(pstmt.getInt("QTDESTOQUE"));
+                    produto.setPreco(pstmt.getDouble("PRECO"));
+
+                    return produto;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+
+    }
+
+    public void updateProdutoById(Produto produto, int id) throws SQLException {
+
+        PreparedStatement pstmt = null;
+        DatabaseRepository dbRepository = new DatabaseRepository();
+        Connection conn = dbRepository.connect();
+
+        String sql = "UPDATE PRODUTO_TR01 SET DESCRICAO = ?, CODIGOBARRAS = ?, FABRICANTE = ?," +
+                " QTDESTOQUE = ?, PRECO = ? WHERE ID = ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, produto.getDescricao());
+            pstmt.setString(2, produto.getCodigoBarras());
+            pstmt.setString(3, produto.getFabricante());
+            pstmt.setInt(4, produto.getQtdEstoque());
+            pstmt.setDouble(5, produto.getPreco());
+            pstmt.setInt(6, produto.getId());
+
+            pstmt.executeUpdate();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+    }
+
+    public void deleteProdutoById(int id) {
+        String sql = "DELETE FROM PRODUTO_TR01 WHERE ID = ?";
+
+        try (Connection conn = dbRepository.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            pstmt.execute();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

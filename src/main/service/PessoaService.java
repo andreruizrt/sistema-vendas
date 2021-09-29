@@ -6,16 +6,17 @@ import main.repository.PessoaRepository;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class PessoaService {
+    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    Scanner sc = new Scanner(System.in);
+
     PessoaRepository pessoaRepository = new PessoaRepository();
 
     public void cadastraPessoa(String tipoCVF) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        Scanner sc = new Scanner(System.in);
-
         Pessoa pessoa = new Pessoa();
 
         System.out.print("Digite um nome: ");
@@ -80,8 +81,60 @@ public class PessoaService {
         }
     }
 
-    public Pessoa findPessoaById(Integer id, String tipoCVF) {
+    public Pessoa findPessoaById(String tipoCVF) {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
         return pessoaRepository.findPessoaById(id, tipoCVF);
     }
 
+    public void updatePessoaById(String tipoCVF) throws IOException, SQLException {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        if (pessoaRepository.findPessoaById(id, tipoCVF) != null) {
+            Pessoa pessoa = new Pessoa();
+
+            System.out.print("Digite um nome: ");
+            pessoa.setNome(in.readLine());
+
+            System.out.print("CPF ou CNPJ: ");
+            pessoa.setCpfCnpj(in.readLine());
+
+            System.out.print("EMAIL: ");
+            pessoa.setEmail(in.readLine());
+
+            System.out.print("TELEFONE: ");
+            pessoa.setTelefone(in.readLine());
+
+            System.out.print("RUA: ");
+            pessoa.setRua(in.readLine());
+
+            System.out.print("NUMERO: ");
+            pessoa.setNumero(sc.nextInt());
+
+            System.out.print("COMPLEMENTO: ");
+            pessoa.setComplemento(in.readLine());
+
+            System.out.print("BAIRRO: ");
+            pessoa.setBairro(in.readLine());
+
+            System.out.print("CIDADE: ");
+            pessoa.setCidade(in.readLine());
+
+            System.out.print("UF: ");
+            pessoa.setUf(in.readLine());
+
+            pessoaRepository.updatePessoaById(pessoa, tipoCVF);
+        } else {
+            System.out.println("Não cadastrado!");
+        }
+    }
+
+    public void deletePessoaById(String tipoCVF) {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        pessoaRepository.deletePessoaById(id, tipoCVF);
+    }
 }

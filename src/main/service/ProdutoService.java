@@ -33,9 +33,6 @@ public class ProdutoService {
         System.out.print("Digite o fabricante: ");
         produto.setFabricante(in.readLine());
 
-        System.out.print("Informe a quantidade em estoque: ");
-        produto.setQtdEstoque(sc.nextInt());
-
         System.out.print("Digite o preço do produto: ");
         produto.setPreco(sc.nextDouble());
 
@@ -46,5 +43,49 @@ public class ProdutoService {
         for (Produto produto : produtos) {
             System.out.println(produto.getId() + ") " + produto.getDescricao());
         }
+    }
+
+    public Produto findProdutoById() {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        return produtoRepository.findProdutoById(id);
+    }
+
+    public void updateProdutoById() throws IOException, SQLException {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        if(produtoRepository.findProdutoById(id) != null) {
+            Produto produto = new Produto();
+
+            System.out.print("Digite a descrição do produto: ");
+            produto.setDescricao(in.readLine());
+
+            System.out.print("Digite o código de barras: ");
+            produto.setCodigoBarras(in.readLine());
+
+            System.out.print("Digite o fabricante: ");
+            produto.setFabricante(in.readLine());
+
+            System.out.print("Informe a quantidade em estoque: ");
+            produto.setQtdEstoque(sc.nextInt());
+
+            System.out.print("Digite o preço do produto: ");
+            produto.setPreco(sc.nextDouble());
+
+            produtoRepository.updateProdutoById(produto, id);
+
+        } else {
+            System.out.println("Produto não registrado!");
+        }
+
+    }
+
+    public void deleteProdutoById() {
+        System.out.println("informe o id");
+        int id = sc.nextInt();
+
+        produtoRepository.deleteProdutoById(id);
     }
 }

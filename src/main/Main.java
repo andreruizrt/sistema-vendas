@@ -1,8 +1,10 @@
+/**
+ * AUTOR: ANDRE RUIZ
+ */
+
 package main;
 
-import main.domain.Pessoa;
-import main.domain.Produto;
-import main.domain.Usuario;
+import main.domain.*;
 import main.service.*;
 
 import java.io.IOException;
@@ -13,32 +15,21 @@ import java.util.Scanner;
 
 public class Main {
 
-
     public static void main(String[] args) throws IOException, SQLException {
         Scanner sc = new Scanner(System.in);
-        PessoaService pessoaService = new PessoaService();
+
         UsuarioService usuarioService = new UsuarioService();
-
-        List<Pessoa> fornecedores = new ArrayList<>();
-        List<Pessoa> vendedores = new ArrayList<>();
-        List<Pessoa> clientes = new ArrayList<>();
-        List<Produto> produtos = new ArrayList<>();
-
+        CompraService compraService = new CompraService();
+        VendaService vendaService = new VendaService();
 
         Usuario usuario = null;
 
+        // TODO criar usuário default
+        // Usuario: admin
+        // Senha: admin
         while (usuario == null) {
             usuario = usuarioService.autenticaUsuario();
         }
-
-        Pessoa vendedorLogado = pessoaService
-                .findPessoaById(usuario.getIdVendedor(), "V");
-
-        System.out.println("\nBem vindo, " + vendedorLogado.getNome() + "!");
-
-        fornecedores = pessoaService.carregaPessoaPorTipo("F");
-        vendedores = pessoaService.carregaPessoaPorTipo("V");
-        clientes = pessoaService.carregaPessoaPorTipo("C");
 
         int opcao = 0;
 
@@ -63,10 +54,10 @@ public class Main {
                     menuRelatorios();
                     break;
                 case 6:
-//                    compraService.realizarCompra();
+                    compraService.realizarCompra();
                     break;
                 case 7:
-//                    vendaService.realizarVenda();
+                    vendaService.realizarVenda();
                     break;
                 case 8:
                     System.out.println("Voltando...");
@@ -103,8 +94,10 @@ public class Main {
         System.out.println("5 - Compra           |");
         System.out.println("6 - Venda            |");
         System.out.println("**********************");
-        System.out.println("7 - Voltar           |");
-        System.out.println("8 - Sair             |");
+        System.out.println("7 - Usuario          |");
+        System.out.println("**********************");
+        System.out.println("8 - Voltar           |");
+        System.out.println("9 - Sair             |");
         System.out.print("Digite a opção: ");
     }
 
@@ -115,12 +108,12 @@ public class Main {
         ProdutoService produtoService = new ProdutoService();
         CompraService compraService = new CompraService();
         VendaService vendaService = new VendaService();
-
-        printSubmenu();
+        UsuarioService usuarioService = new UsuarioService();
 
         int opcao = 0;
 
-        while(opcao != 7) {
+        while(opcao != 8) {
+            printSubmenu();
             opcao = sc.nextInt();
 
             switch (opcao) {
@@ -140,9 +133,12 @@ public class Main {
                     compraService.realizarCompra();
                     break;
                 case 6:
-//                  vendaService.realizarVenda();
+                    vendaService.realizarVenda();
                     break;
                 case 7:
+                    usuarioService.cadastraUsuario();
+                    break;
+                case 8:
                     System.out.println("Voltando...");
                     break;
                 case 9:
@@ -151,41 +147,169 @@ public class Main {
                     System.out.println("Opção incorreta.");
             }
         }
-
-
     }
 
-    private static void menuPesquisar() throws SQLException, IOException {
+    private static void menuPesquisar() {
         Scanner sc = new Scanner(System.in);
-        printSubmenu();
+
+        PessoaService pessoaService = new PessoaService();
+        ProdutoService produtoService = new ProdutoService();
+        CompraService compraService = new CompraService();
+        VendaService vendaService = new VendaService();
+        UsuarioService usuarioService = new UsuarioService();
+
 
         int opcao = 0;
 
         while(opcao != 8) {
-            printMenu();
+            printSubmenu();
             opcao = sc.nextInt();
 
             switch (opcao) {
                 case 1:
-                    menuCadatrar();
+                    Pessoa pessoa = pessoaService.findPessoaById("C");
+                    if(pessoa != null) {
+                        pessoaService.printPessoa(pessoa);
+                    } else {
+                        System.out.println("Cliente não encontrado!");
+                    }
                     break;
                 case 2:
-                    menuPesquisar();
+                    pessoa = pessoaService.findPessoaById("V");
+                    if(pessoa != null) {
+                        pessoaService.printPessoa(pessoa);
+                    } else {
+                        System.out.println("Vendedor não encontrado!");
+                    }
                     break;
                 case 3:
-                    menuEditar();
+                    pessoa = pessoaService.findPessoaById("F");
+                    if(pessoa != null) {
+                        pessoaService.printPessoa(pessoa);
+                    } else {
+                        System.out.println("Fornecedor não encontrado!");
+                    }
                     break;
                 case 4:
-                    menuExcluir();
+                    Produto produto = produtoService.findProdutoById();
+                    if(produto != null) {
+                        produto.toString();
+                    } else {
+                        System.out.println("Produto não encontrado!");
+                    }
                     break;
                 case 5:
-                    menuRelatorios();
+                    Compra compra = compraService.findCompraById();
+                    if(compra != null) {
+                        compra.toString();
+                    } else {
+                        System.out.println("Compra não encontrada!");
+                    }
                     break;
                 case 6:
-//                    compraService.realizarCompra();
+                    Venda venda = vendaService.findVendaById();
+                    if(venda != null) {
+                        venda.toString();
+                    } else {
+                        System.out.println("Venda não encontrada!");
+                    }
                     break;
                 case 7:
-//                    vendaService.realizarVenda();
+                    Usuario usuario = usuarioService.findUsuarioById();
+                    if(usuario != null) {
+                        usuario.toString();
+                    } else {
+                        System.out.println("Usuário não encontrado!");
+                    }
+                    break;
+                case 8:
+                    System.out.println("Voltando...");
+                    break;
+                case 9:
+                    System.exit(0);
+                default:
+                    System.out.println("Opção incorreta.");
+            }
+        }
+    }
+
+    private static void menuEditar() throws SQLException, IOException {
+        Scanner sc = new Scanner(System.in);
+
+        PessoaService pessoaService = new PessoaService();
+        ProdutoService produtoService = new ProdutoService();
+        UsuarioService usuarioService = new UsuarioService();
+
+
+        int opcao = 0;
+
+        while(opcao != 8) {
+            printSubmenu();
+            opcao = sc.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    pessoaService.updatePessoaById("C");
+                    break;
+                case 2:
+                    pessoaService.updatePessoaById("V");
+                    break;
+                case 3:
+                    pessoaService.updatePessoaById("F");
+                    break;
+                case 4:
+                    produtoService.updateProdutoById();
+                    break;
+                case 5:
+                    usuarioService.updateUsuarioById();
+                    break;
+                case 8:
+                    System.out.println("Voltando...");
+                    break;
+                case 9:
+                    System.exit(0);
+                default:
+                    System.out.println("Opção incorreta.");
+            }
+        }
+    }
+
+    private static void menuExcluir() {
+        Scanner sc = new Scanner(System.in);
+
+        PessoaService pessoaService = new PessoaService();
+        ProdutoService produtoService = new ProdutoService();
+        CompraService compraService = new CompraService();
+        VendaService vendaService = new VendaService();
+        UsuarioService usuarioService = new UsuarioService();
+
+        int opcao = 0;
+
+        while(opcao != 8) {
+            printSubmenu();
+            opcao = sc.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    pessoaService.deletePessoaById("C");
+                    break;
+                case 2:
+                    pessoaService.deletePessoaById("V");
+                    break;
+                case 3:
+                    pessoaService.deletePessoaById("F");
+                    break;
+                case 4:
+                    produtoService.deleteProdutoById();
+                    break;
+                case 5:
+                    compraService.deleteCompraById();
+                    break;
+                case 6:
+                    vendaService.deleteVendaById();
+                    break;
+                case 7:
+                    usuarioService.deleteUsuarioById();
                     break;
                 case 8:
                     System.out.println("Voltando...");
@@ -199,15 +323,14 @@ public class Main {
     }
 
     private static void menuRelatorios() {
-        printSubmenu();
-    }
+        PessoaService pessoaService = new PessoaService();
+        ProdutoService produtoService = new ProdutoService();
+        CompraService compraService = new CompraService();
+        VendaService vendaService = new VendaService();
+        UsuarioService usuarioService = new UsuarioService();
 
-    private static void menuExcluir() {
-        printSubmenu();
-    }
-
-    private static void menuEditar() {
-        printSubmenu();
+        System.out.println("[*] GERANDO RELATÓRIO");
+        List<Compra> compras = new ArrayList<>();
     }
 }
 

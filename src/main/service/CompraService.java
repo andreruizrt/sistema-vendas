@@ -3,6 +3,7 @@ package main.service;
 import main.domain.Compra;
 import main.domain.Produto;
 import main.repository.CompraRepository;
+import main.repository.ControleEstoqueRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class CompraService {
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     Scanner sc = new Scanner(System.in);
 
+    ControleEstoqueRepository controleEstoqueRepository = new ControleEstoqueRepository();
     CompraRepository compraRepostory = new CompraRepository();
     PessoaService pessoaService = new PessoaService();
 
@@ -29,6 +31,7 @@ public class CompraService {
         compra.setIdFornecedor(sc.nextInt());
 
         compra.setDtCompra(new Timestamp(System.currentTimeMillis()));
+        /* TODO fix idCompra error */
         compra.setId(compraRepostory.registaCompra(compra));
 
         List<Produto> produtoComprados = new ArrayList<>();
@@ -44,6 +47,7 @@ public class CompraService {
             produto.setQtdEstoque(sc.nextInt());
 
             produtoComprados.add(produto);
+            controleEstoqueRepository.entradaEstoque(produto.getId(), produto.getQtdEstoque());
 
             System.out.println("Deseja inserir outro produto a lista de compras? [SIM/NÃO]");
             String resposta = in.readLine();
@@ -52,14 +56,23 @@ public class CompraService {
                 System.out.println("Insira o próximo produto\n");
             } else {
                 compraRepostory.inserirCompraItens(compra.getId(), produtoComprados);
-                System.out.println("****** Produto Comprados ******");
-                produtoService.printIdEDescricao(produtoComprados);
                 break;
             }
 
         }
+    }
 
+    public Compra findCompraById() {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
 
+        return compraRepostory.findCompraById(id);
+    }
 
+    public void deleteCompraById() {
+        System.out.println("Informe o id: ");
+        int id = sc.nextInt();
+
+        compraRepostory.deleteCompraById(id);
     }
 }
